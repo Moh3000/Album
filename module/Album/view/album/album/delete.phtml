@@ -1,0 +1,21 @@
+<?php $this->headTitle('Delete Album'); ?>
+
+<h1>Delete Album</h1>
+
+<?php
+$successMessages = $this->flashMessenger()->getMessages('success');
+if (!empty($successMessages)) : ?>
+    <?php foreach ($successMessages as $message) : ?>
+        <div style="background:#d4edda; color:#155724; padding:10px; margin-bottom:10px; border-radius:4px;">
+            <?= $this->escapeHtml($message) ?>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<p>Are you sure you want to delete album <strong><?= $this->escapeHtml($album->getTitle()) ?></strong> by <strong><?= $this->escapeHtml($album->getArtist()) ?></strong>?</p>
+
+<form method="post" action="<?= $this->url('album', ['action' => 'delete', 'id' => $album->getId()]) ?>">
+    <input type="hidden" name="confirm" value="yes">
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a href="<?= $this->url('album') ?>">Cancel</a>
+</form>

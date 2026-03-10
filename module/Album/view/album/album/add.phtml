@@ -1,0 +1,39 @@
+<?php $this->headTitle('Add New Album'); ?>
+
+<h1>Add New Album</h1>
+
+<?php
+$successMessages = $this->flashMessenger()->getMessages('success');
+if (!empty($successMessages)) : ?>
+    <?php foreach ($successMessages as $message) : ?>
+        <div style="background:#d4edda; color:#155724; padding:10px; margin-bottom:10px; border-radius:4px;">
+            <?= $this->escapeHtml($message) ?>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<?php
+$form = $this->form;
+$form->setAttribute('action', $this->url('album', ['action' => 'add']));
+$form->setAttribute('method', 'post');
+
+$title  = $form->get('title');
+$artist = $form->get('artist');
+$submit = $form->get('submit');
+?>
+
+<form action="<?= $form->getAttribute('action') ?>" method="<?= $form->getAttribute('method') ?>">
+    <div class="form-group">
+        <label for="title">Title</label>
+        <?= $this->formInput($title) ?>
+        <?= $this->formElementErrors($title) ?>
+    </div>
+    <div class="form-group">
+        <label for="artist">Artist</label>
+        <?= $this->formInput($artist) ?>
+        <?= $this->formElementErrors($artist) ?>
+    </div>
+    <?= $this->formSubmit($submit) ?>
+</form>
+
+<a href="<?= $this->url('album') ?>">Back to albums</a>
