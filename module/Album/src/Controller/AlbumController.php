@@ -2,6 +2,8 @@
 
 namespace Album\Controller;
 
+use Laminas\Hydrator\ClassMethodsHydrator;
+
 use Album\Entity\Album;
 use Album\Form\AlbumForm;
 use Album\Form\AlbumFilter;
@@ -11,11 +13,13 @@ use Laminas\View\Model\ViewModel;
 
 class AlbumController extends AbstractActionController
 {
+     private ClassMethodsHydrator $hydrator;
     private EntityManager $entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
+        $this->hydrator      = new ClassMethodsHydrator();
     }
 
     public function indexAction()
@@ -50,9 +54,7 @@ class AlbumController extends AbstractActionController
                 $data = $form->getData();
 
                 $album = new Album();
-                $album->setTitle($data['title']);
-                $album->setArtist($data['artist']);
-
+                $this->hydrator->hydrate($data, $album); // one line!
                 $this->entityManager->persist($album);
                 $this->entityManager->flush();
 
@@ -83,10 +85,7 @@ class AlbumController extends AbstractActionController
 
             if ($form->isValid()) {
                 $data = $form->getData();
-
-                $album->setTitle($data['title']);
-                $album->setArtist($data['artist']);
-
+                $this->hydrator->hydrate($data, $album); // same one line!
                 $this->entityManager->flush();
 
                 $flashMessenger = $this->flashMessenger();
@@ -96,10 +95,7 @@ class AlbumController extends AbstractActionController
             }
         }
 
-        $form->setData([
-            'title'  => $album->getTitle(),
-            'artist' => $album->getArtist(),
-        ]);
+        $form->setData($this->hydrator->extract($album)); // one line!
 
         return new ViewModel(['form' => $form, 'album' => $album]);
     }

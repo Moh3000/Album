@@ -16,6 +16,7 @@
         "laminas/laminas-cli": "^1.14",
         "laminas/laminas-component-installer": "^3.4.0",
         "laminas/laminas-development-mode": "^3.12.0",
+        "laminas/laminas-hydrator": "^4.18",
         "laminas/laminas-i18n": "^2.32",
         "laminas/laminas-mvc": "^3.7.0",
         "laminas/laminas-mvc-plugin-flashmessenger": "^1.11",
