@@ -2,24 +2,25 @@
 
 namespace Album\Controller;
 
-use Laminas\Hydrator\ClassMethodsHydrator;
-
 use Album\Entity\Album;
-use Album\Form\AlbumForm;
-use Album\Form\AlbumFilter;
+use Album\Form\AddAlbumForm;
+use Album\Form\EditAlbumForm;
 use Doctrine\ORM\EntityManager;
+use Laminas\Form\FormElementManager;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 
 class AlbumController extends AbstractActionController
 {
-     private ClassMethodsHydrator $hydrator;
     private EntityManager $entityManager;
+    private FormElementManager $formManager;
 
-    public function __construct(EntityManager $entityManager)
-    {
+    public function __construct(
+        EntityManager $entityManager,
+        FormElementManager $formManager
+    ) {
         $this->entityManager = $entityManager;
-        $this->hydrator      = new ClassMethodsHydrator();
+        $this->formManager   = $formManager;
     }
 
     public function indexAction()
@@ -44,22 +45,18 @@ class AlbumController extends AbstractActionController
 
     public function addAction()
     {
-        $form = new AlbumForm();
-        $form->setInputFilter(new AlbumFilter());
+        // get form from FormElementManager
+        $form = $this->formManager->get(AddAlbumForm::class);
 
         if ($this->getRequest()->isPost()) {
-            $form->setData($this->params()->fromPost());
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $data = $form->getData();
+                // returns populated Album object!
+                $album = $form->getData();
 
-                $album = new Album();
-                $this->hydrator->hydrate($data, $album); // one line!
                 $this->entityManager->persist($album);
                 $this->entityManager->flush();
-
-                $flashMessenger = $this->flashMessenger();
-                $flashMessenger->addMessage('Album "' . $data['title'] . '" was added successfully!', 'success');
 
                 return $this->redirect()->toRoute('album');
             }
@@ -70,35 +67,33 @@ class AlbumController extends AbstractActionController
 
     public function editAction()
     {
-        $id = $this->params()->fromRoute('id', 0);
-        $album = $this->entityManager->getRepository(Album::class)->find($id);
+        $id    = $this->params()->fromRoute('id', 0);
+        $album = $this->entityManager->find(Album::class, $id);
 
         if (!$album) {
             return $this->redirect()->toRoute('album');
         }
 
-        $form = new AlbumForm();
-        $form->setInputFilter(new AlbumFilter());
+        $form = $this->formManager->get(EditAlbumForm::class);
+
+        // bind existing album - auto populates form fields!
+        $form->bind($album);
 
         if ($this->getRequest()->isPost()) {
-            $form->setData($this->params()->fromPost());
+            $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid()) {
-                $data = $form->getData();
-                $this->hydrator->hydrate($data, $album); // same one line!
+                // $album is already updated by binding!
+                // no need to manually set fields
                 $this->entityManager->flush();
-
-                $flashMessenger = $this->flashMessenger();
-                $flashMessenger->addMessage('Album "' . $data['title'] . '" was updated successfully!', 'success');
 
                 return $this->redirect()->toRoute('album');
             }
         }
 
-        $form->setData($this->hydrator->extract($album)); // one line!
-
         return new ViewModel(['form' => $form, 'album' => $album]);
     }
+
 
     public function deleteAction()
     {

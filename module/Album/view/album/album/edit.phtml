@@ -1,38 +1,31 @@
-<?php $this->headTitle('Edit Album'); ?>
-
-<h1>Edit Album</h1>
-
-<?php
-$successMessages = $this->flashMessenger()->getMessages('success');
-if (!empty($successMessages)) : ?>
-    <?php foreach ($successMessages as $message) : ?>
-        <div style="background:#d4edda; color:#155724; padding:10px; margin-bottom:10px; border-radius:4px;">
-            <?= $this->escapeHtml($message) ?>
-        </div>
-    <?php endforeach; ?>
-<?php endif; ?>
-
 <?php
 $form = $this->form;
 $form->setAttribute('action', $this->url('album', ['action' => 'edit', 'id' => $album->getId()]));
 $form->setAttribute('method', 'post');
+$form->prepare();
 
-$title  = $form->get('title');
-$artist = $form->get('artist');
+// get the fieldset first!
+$fieldset = $form->get('album');
+
+$title  = $fieldset->get('title');
+$artist = $fieldset->get('artist');
 $submit = $form->get('submit');
 ?>
 
-<form action="<?= $form->getAttribute('action') ?>" method="<?= $form->getAttribute('method') ?>">
-    <div class="form-group">
-        <?= $this->formLabel($title) ?>
-        <?= $this->formInput($title) ?>
-        <?= $this->formElementErrors($title) ?>
-    </div>
-    <div class="form-group">
-        <?= $this->formLabel($artist) ?>
-        <?= $this->formInput($artist) ?>
-        <?= $this->formElementErrors($artist) ?>
-    </div>
-    <?= $this->formSubmit($submit) ?>
-    <a href="<?= $this->url('album') ?>">Cancel</a>
-</form>
+<?= $this->form()->openTag($form) ?>
+
+<div class="mb-3">
+    <?= $this->formLabel($title) ?>
+    <?= $this->formInput($title) ?>
+    <?= $this->formElementErrors($title, ['class' => 'text-danger']) ?>
+</div>
+
+<div class="mb-3">
+    <?= $this->formLabel($artist) ?>
+    <?= $this->formInput($artist) ?>
+    <?= $this->formElementErrors($artist, ['class' => 'text-danger']) ?>
+</div>
+
+<?= $this->formSubmit($submit) ?>
+
+<?= $this->form()->closeTag() ?>

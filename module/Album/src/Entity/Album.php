@@ -2,46 +2,46 @@
 
 namespace Album\Entity;
 
+use Album\Repository\AlbumRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: \Album\Repository\AlbumRepository::class)]
+#[ORM\Entity(repositoryClass: AlbumRepository::class)] 
 #[ORM\Table(name: 'album')]
 class Album
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 100)]
-    private string $artist;
+    private ?string $title = null;
 
     #[ORM\Column(type: 'string', length: 100)]
-    private string $title;
-    
+    private ?string $artist = null;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getArtist(): string
-    {
-        return $this->artist;
-    }
-
-    public function setArtist(string $artist): void
-    {
-        $this->artist = $artist;
-    }
-
-    public function getTitle(): string
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    public function setTitle(string $title): void
+    public function setTitle(?string $title): void
     {
         $this->title = $title;
+    }
+
+    public function getArtist(): ?string
+    {
+        return $this->artist;
+    }
+
+    public function setArtist(?string $artist): void
+    {
+        $this->artist = $artist;
     }
 }
