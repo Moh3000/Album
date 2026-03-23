@@ -3,10 +3,13 @@
 /** @var \Album\Form\AlbumForm $form */
 $form->prepare();
 
-$title   = $form->get('title');
-$artist  = $form->get('artist');
-$authors = $form->get('authors');
-$submit  = $form->get('submit');
+$fieldset = $form->has('album') ? $form->get('album') : $form;
+
+$title   = $fieldset->has('title') ? $fieldset->get('title') : ($form->has('title') ? $form->get('title') : null);
+$artist  = $fieldset->has('artist') ? $fieldset->get('artist') : ($form->has('artist') ? $form->get('artist') : null);
+$authors = $fieldset->has('authors') ? $fieldset->get('authors') : ($form->has('authors') ? $form->get('authors') : []);
+$submit  = $form->has('submit') ? $form->get('submit') : null;
+$id      = $fieldset->has('id') ? $fieldset->get('id') : ($form->has('id') ? $form->get('id') : null);
 ?>
 
 <h2>Edit Album</h2>
@@ -19,7 +22,7 @@ $form->setAttribute('action', $this->url('album', [
 ?>
 <?= $this->form()->openTag($form) ?>
 
-<?= $this->formHidden($form->get('id')) ?>
+<?= $id ? $this->formHidden($id) : '' ?>
 
 <div class="mb-3">
     <?= $this->formLabel($title) ?>
