@@ -3,13 +3,11 @@
 /** @var \Album\Form\AlbumForm $form */
 $form->prepare();
 
-$fieldset = $form->has('album') ? $form->get('album') : $form;
-
-$title   = $fieldset->has('title') ? $fieldset->get('title') : ($form->has('title') ? $form->get('title') : null);
-$artist  = $fieldset->has('artist') ? $fieldset->get('artist') : ($form->has('artist') ? $form->get('artist') : null);
-$authors = $fieldset->has('authors') ? $fieldset->get('authors') : ($form->has('authors') ? $form->get('authors') : []);
+$title   = $form->has('title') ? $form->get('title') : null;
+$artist  = $form->has('artist') ? $form->get('artist') : null;
+$authors = $form->has('authors') ? $form->get('authors') : [];
 $submit  = $form->has('submit') ? $form->get('submit') : null;
-$id      = $fieldset->has('id') ? $fieldset->get('id') : ($form->has('id') ? $form->get('id') : null);
+$id      = $form->has('id') ? $form->get('id') : null;
 ?>
 
 <h2>Edit Album</h2>
@@ -22,7 +20,7 @@ $form->setAttribute('action', $this->url('album', [
 ?>
 <?= $this->form()->openTag($form) ?>
 
-<?= $id ? $this->formHidden($id) : '' ?>
+<?php if ($id): ?><?= $this->formHidden($id) ?><?php endif; ?>
 
 <div class="mb-3">
     <?= $this->formLabel($title) ?>
@@ -41,8 +39,8 @@ $form->setAttribute('action', $this->url('album', [
     <div id="authors-container">
         <?php foreach ($authors as $index => $authorFieldset) : ?>
             <div class="author-row d-flex gap-2 mb-2">
-                <?= $this->formHidden($authorFieldset->get('id')) ?>
-                <?= $this->formInput($authorFieldset->get('name')) ?>
+                <?php if ($authorFieldset->has('id')): ?><?= $this->formHidden($authorFieldset->get('id')) ?><?php endif; ?>
+                <?php if ($authorFieldset->has('name')): ?><?= $this->formInput($authorFieldset->get('name')) ?><?php endif; ?>
                 <button type="button"
                     class="btn btn-danger btn-sm"
                     onclick="removeAuthor(this)">

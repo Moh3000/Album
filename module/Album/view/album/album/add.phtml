@@ -3,11 +3,9 @@ $form->setAttribute('action', $this->url('album', ['action' => 'add']));
 /** @var \Album\Form\AlbumForm $form */
 $form->prepare();
 
-$fieldset = $form->has('album') ? $form->get('album') : $form;
-
-$title   = $fieldset->has('title') ? $fieldset->get('title') : ($form->has('title') ? $form->get('title') : null);
-$artist  = $fieldset->has('artist') ? $fieldset->get('artist') : ($form->has('artist') ? $form->get('artist') : null);
-$authors = $fieldset->has('authors') ? $fieldset->get('authors') : ($form->has('authors') ? $form->get('authors') : []);
+$title   = $form->has('title') ? $form->get('title') : null;
+$artist  = $form->has('artist') ? $form->get('artist') : null;
+$authors = $form->has('authors') ? $form->get('authors') : [];
 $submit  = $form->has('submit') ? $form->get('submit') : null;
 ?>
 
