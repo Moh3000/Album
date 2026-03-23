@@ -5,7 +5,7 @@ namespace Album\Entity;
 use Album\Repository\AlbumRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: AlbumRepository::class)] 
+#[ORM\Entity(repositoryClass: AlbumRepository::class)]
 #[ORM\Table(name: 'album')]
 class Album
 {
