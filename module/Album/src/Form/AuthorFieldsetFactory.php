@@ -1,23 +1,23 @@
 <?php
 
-namespace Album\Controller;
+namespace Album\Form;
 
-use Album\Form\AlbumForm;
+use Album\Form\AuthorFieldset;
 use Doctrine\ORM\EntityManager;
-
 
 use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
-class AlbumControllerFactory implements FactoryInterface
+class AuthorFieldsetFactory implements FactoryInterface
 {
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
         ?array $options = null
-    ): AlbumController {
+    ): AuthorFieldset {
         $entityManager = $container->get(EntityManager::class);
-        $albumForm = $container->get(AlbumForm::class);
-        return new AlbumController($entityManager, $albumForm);
+        
+
+        return new AuthorFieldset($entityManager);
     }
 }

@@ -3,24 +3,24 @@
 namespace Album\Controller;
 
 use Album\Entity\Album;
-use Album\Form\AddAlbumForm;
-use Album\Form\EditAlbumForm;
+use Album\Form\AlbumForm;
 use Doctrine\ORM\EntityManager;
 use Laminas\Form\FormElementManager;
+use Laminas\Http\Request;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 
 class AlbumController extends AbstractActionController
 {
     private EntityManager $entityManager;
-    private FormElementManager $formManager;
+    private AlbumForm $albumForm;
 
     public function __construct(
         EntityManager $entityManager,
-        FormElementManager $formManager
+        AlbumForm $albumForm
     ) {
         $this->entityManager = $entityManager;
-        $this->formManager   = $formManager;
+        $this->albumForm   = $albumForm;
     }
 
     public function indexAction()
@@ -46,10 +46,13 @@ class AlbumController extends AbstractActionController
     public function addAction()
     {
         // get form from FormElementManager
-        $form = $this->formManager->get(AddAlbumForm::class);
+        $form = $this->albumForm;
 
-        if ($this->getRequest()->isPost()) {
-            $form->setData($this->getRequest()->getPost());
+        /** @var Request $request */
+        $request = $this->getRequest();
+
+        if ($request->isPost()) {
+            $form->setData($request->getPost());
 
             if ($form->isValid()) {
                 // returns populated Album object!
@@ -57,7 +60,8 @@ class AlbumController extends AbstractActionController
 
                 $this->entityManager->persist($album);
                 $this->entityManager->flush();
-
+                $flashMessenger = $this->flashMessenger();
+                $flashMessenger->addMessage('Album "' . $album->getTitle() . '" was added successfully!', 'success');
                 return $this->redirect()->toRoute('album');
             }
         }
@@ -74,19 +78,23 @@ class AlbumController extends AbstractActionController
             return $this->redirect()->toRoute('album');
         }
 
-        $form = $this->formManager->get(EditAlbumForm::class);
+        $form = $this->albumForm;
 
         // bind existing album - auto populates form fields!
         $form->bind($album);
 
-        if ($this->getRequest()->isPost()) {
-            $form->setData($this->getRequest()->getPost());
+        /** @var Request $request */
+        $request = $this->getRequest();
+
+        if ($request->isPost()) {
+            $form->setData($request->getPost());
 
             if ($form->isValid()) {
                 // $album is already updated by binding!
                 // no need to manually set fields
                 $this->entityManager->flush();
-
+                $flashMessenger = $this->flashMessenger();
+                $flashMessenger->addMessage('Album "' . $album->getTitle() . '" was updated successfully!', 'success');
                 return $this->redirect()->toRoute('album');
             }
         }
@@ -104,6 +112,7 @@ class AlbumController extends AbstractActionController
             return $this->redirect()->toRoute('album');
         }
 
+        /** @var Request $request */
         $request = $this->getRequest();
 
         if ($request->isPost()) {

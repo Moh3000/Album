@@ -1,24 +1,39 @@
 <?php
 
 namespace Album\Form;
-
 use Album\Entity\Album;
-use Laminas\Form\Fieldset;
-use Laminas\Hydrator\ClassMethodsHydrator;
+use Doctrine\Laminas\Hydrator\DoctrineObject as DoctrineHydrator;
+use Doctrine\ORM\EntityManager;
+use Laminas\Form\Form;
 use Laminas\InputFilter\InputFilterProviderInterface;
+use Doctrine\Common\Collections\Collection;
 
-class AlbumFieldset extends Fieldset implements InputFilterProviderInterface
+class AlbumForm extends Form  implements InputFilterProviderInterface
+ 
 {
-    public function __construct()
+
+    public function __construct(EntityManager $entityManager)
     {
         parent::__construct('album');
 
-        $this->setHydrator(new ClassMethodsHydrator());
-        $this->setObject(new Album());
+        $this->setHydrator(new DoctrineHydrator($entityManager, Album::class));
     }
-
     public function init(): void
     {
+       
+        $this->add([
+            'type'    => \Laminas\Form\Element\Collection::class,
+            'name'    => 'Authors',
+            'options' => [
+                'label'          => 'Authors',
+                'count'          => 3,
+                'allow_add'      => true,
+                'allow_remove'   => true,
+                'target_element' => [
+                    'type' => AuthorFieldset::class,
+                ],
+            ],
+        ]);
         $this->add([
             'type' => 'hidden',
             'name' => 'id',
@@ -37,6 +52,16 @@ class AlbumFieldset extends Fieldset implements InputFilterProviderInterface
             'options'    => ['label' => 'Artist'],
             'attributes' => ['class' => 'form-control'],
         ]);
+
+        $this->add([
+            'type'       => 'submit',
+            'name'       => 'submit',
+            'attributes' => [
+                'value' => 'Save ',
+                'class' => 'btn btn-success',
+            ],
+        ]);
+
     }
 
     public function getInputFilterSpecification(): array

@@ -23,6 +23,18 @@ return [
             ],
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            \Album\Form\AlbumForm::class => \Album\Form\AlbumFormFactory::class,
+            \Album\Form\AuthorFieldset::class => \Album\Form\AuthorFieldsetFactory::class,
+        ],
+    ],
+    'form_elements' => [
+        'factories' => [
+            \Album\Form\AlbumForm::class => \Album\Form\AlbumFormFactory::class,
+            \Album\Form\AuthorFieldset::class => \Album\Form\AuthorFieldsetFactory::class,
+        ],
+    ],
     'controllers' => [
         'factories' => [
             Controller\AlbumController::class => Controller\AlbumControllerFactory::class,
@@ -46,5 +58,4 @@ return [
             ],
         ],
     ],
-
 ];

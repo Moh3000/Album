@@ -4,12 +4,9 @@ $form->setAttribute('action', $this->url('album', ['action' => 'add']));
 $form->setAttribute('method', 'post');
 $form->prepare();
 
-// get the fieldset first!
-$fieldset = $form->get('album');
-
-// then get elements FROM the fieldset
-$title  = $fieldset->get('title');
-$artist = $fieldset->get('artist');
+// form is flat (id/title/artist items at root)
+$title  = $form->get('title');
+$artist = $form->get('artist');
 $submit = $form->get('submit');
 ?>
 
