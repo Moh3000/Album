@@ -1,30 +1,87 @@
 <?php
-$form = $this->form;
 $form->setAttribute('action', $this->url('album', ['action' => 'add']));
-$form->setAttribute('method', 'post');
+/** @var \Album\Form\AlbumForm $form */
 $form->prepare();
 
-$fieldset = $form->has('album') ? $form->get('album') : $form;
-
-$title  = $fieldset->get('title');
-$artist = $fieldset->get('artist');
-$submit = $form->get('submit');
+$title   = $form->get('title');
+$artist  = $form->get('artist');
+$authors = $form->get('authors');
+$submit  = $form->get('submit');
 ?>
+
+<h2>Add Album</h2>
 
 <?= $this->form()->openTag($form) ?>
 
 <div class="mb-3">
     <?= $this->formLabel($title) ?>
     <?= $this->formInput($title) ?>
-    <?= $this->formElementErrors($title, ['class' => 'text-danger']) ?>
+    <?= $this->formElementErrors($title, ['class' => 'text-danger small']) ?>
 </div>
 
 <div class="mb-3">
     <?= $this->formLabel($artist) ?>
     <?= $this->formInput($artist) ?>
-    <?= $this->formElementErrors($artist, ['class' => 'text-danger']) ?>
+    <?= $this->formElementErrors($artist, ['class' => 'text-danger small']) ?>
 </div>
 
-<?= $this->formSubmit($submit) ?>
+<div class="mb-3">
+    <label class="form-label fw-bold">Authors</label>
+    <div id="authors-container">
+        <?php foreach ($authors as $index => $authorFieldset) : ?>
+            <div class="author-row d-flex gap-2 mb-2">
+                <?= $this->formInput($authorFieldset->get('name')) ?>
+                <button type="button"
+                    class="btn btn-danger btn-sm"
+                    onclick="removeAuthor(this)">
+                    &times; Remove
+                </button>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+    <button type="button"
+        class="btn btn-outline-secondary btn-sm mt-2"
+        onclick="addAuthor()">
+        + Add Author
+    </button>
+</div>
+
+<div class="mt-3">
+    <?= $this->formSubmit($submit) ?>
+    <a href="<?= $this->url('album') ?>" class="btn btn-secondary ms-2">
+        Cancel
+    </a>
+</div>
 
 <?= $this->form()->closeTag() ?>
+
+<script>
+    let authorCount = <?= count(iterator_to_array($authors)) ?>;
+
+    function addAuthor() {
+        const container = document.getElementById('authors-container');
+        const row = document.createElement('div');
+        row.className = 'author-row d-flex gap-2 mb-2';
+        row.innerHTML = `
+            <input type="hidden"
+                   name="authors[${authorCount}][id]"
+                   value="">
+            <input type="text"
+                   name="authors[${authorCount}][name]"
+                   class="form-control"
+                   placeholder="Enter author name">
+            <button type="button"
+                    class="btn btn-danger btn-sm"
+                    onclick="removeAuthor(this)">
+                &times; Remove
+            </button>
+        `;
+        container.appendChild(row);
+        authorCount++;
+    }
+
+    function removeAuthor(button) {
+        button.closest('.author-row').remove();
+    }
+</script>

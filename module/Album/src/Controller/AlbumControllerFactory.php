@@ -2,8 +2,8 @@
 
 namespace Album\Controller;
 
+use Album\Form\AlbumForm;
 use Doctrine\ORM\EntityManager;
-use Laminas\Form\FormElementManager;
 use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
@@ -15,8 +15,8 @@ class AlbumControllerFactory implements FactoryInterface
         ?array $options = null
     ): AlbumController {
         $entityManager = $container->get(EntityManager::class);
-        $formManager   = $container->get(FormElementManager::class);
+        $albumForm     = $container->get(AlbumForm::class);
 
-        return new AlbumController($entityManager, $formManager);
+        return new AlbumController($entityManager, $albumForm);
     }
 }

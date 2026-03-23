@@ -3,38 +3,36 @@
 namespace Album\Controller;
 
 use Album\Entity\Album;
-use Album\Form\AddAlbumForm;
-use Album\Form\EditAlbumForm;
+use Album\Entity\Author;
+use Album\Form\AlbumForm;
 use Doctrine\ORM\EntityManager;
-use Laminas\Form\FormElementManager;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 
 class AlbumController extends AbstractActionController
 {
     private EntityManager $entityManager;
-    private FormElementManager $formManager;
+    private AlbumForm $albumForm;
 
     public function __construct(
         EntityManager $entityManager,
-        FormElementManager $formManager
+        AlbumForm $albumForm
     ) {
         $this->entityManager = $entityManager;
-        $this->formManager   = $formManager;
+        $this->albumForm     = $albumForm;
     }
 
     public function indexAction()
     {
-        $page = (int) $this->params()->fromQuery('page', 1);
+        $page    = (int) $this->params()->fromQuery('page', 1);
         $perPage = 5;
 
-        $repository = $this->entityManager->getRepository(Album::class);
+        $repository        = $this->entityManager->getRepository(Album::class);
         $doctrinePaginator = $repository->findPaginated($page, $perPage);
 
         $totalItems = count($doctrinePaginator);
         $totalPages = (int) ceil($totalItems / $perPage);
-
-        $albums = iterator_to_array($doctrinePaginator);
+        $albums     = iterator_to_array($doctrinePaginator);
 
         return new ViewModel([
             'albums'      => $albums,
@@ -45,15 +43,27 @@ class AlbumController extends AbstractActionController
 
     public function addAction()
     {
-        // get form from FormElementManager
-        $form = $this->formManager->get(AddAlbumForm::class);
+        $form = $this->albumForm;
+
 
         if ($this->getRequest()->isPost()) {
-            $form->setData($this->getRequest()->getPost());
+            $form->setData($this->getRequest()->getPost()->toArray());
 
             if ($form->isValid()) {
-                // returns populated Album object!
-                $album = $form->getData();
+                $data  = $form->getData();
+                $album = new Album();
+                $album->setTitle($data['title']);
+                $album->setArtist($data['artist']);
+
+                if (!empty($data['authors'])) {
+                    foreach ($data['authors'] as $authorData) {
+                        if (!empty(trim($authorData['name'] ?? ''))) {
+                            $author = new Author();
+                            $author->setName($authorData['name']);
+                            $album->addAuthor($author);
+                        }
+                    }
+                }
 
                 $this->entityManager->persist($album);
                 $this->entityManager->flush();
@@ -68,56 +78,77 @@ class AlbumController extends AbstractActionController
     public function editAction()
     {
         $id    = $this->params()->fromRoute('id', 0);
-        $album = $this->entityManager->find(Album::class, $id);
-
-        if (!$album) {
-            return $this->redirect()->toRoute('album');
-        }
-
-        $form = $this->formManager->get(EditAlbumForm::class);
-
-        // bind existing album - auto populates form fields!
-        $form->bind($album);
-
-        if ($this->getRequest()->isPost()) {
-            $form->setData($this->getRequest()->getPost());
-
-            if ($form->isValid()) {
-                // $album is already updated by binding!
-                // no need to manually set fields
-                $this->entityManager->flush();
-
-                return $this->redirect()->toRoute('album');
-            }
-        }
-
-        return new ViewModel(['form' => $form, 'album' => $album]);
-    }
-
-
-    public function deleteAction()
-    {
-        $id = $this->params()->fromRoute('id', 0);
         $album = $this->entityManager->getRepository(Album::class)->find($id);
 
         if (!$album) {
             return $this->redirect()->toRoute('album');
         }
 
-        $request = $this->getRequest();
+        $form = $this->albumForm;
+      
 
-        if ($request->isPost()) {
-            $confirm = $this->params()->fromPost('confirm');
+        if ($this->getRequest()->isPost()) {
+            $form->setData($this->getRequest()->getPost()->toArray());
 
-            if ($confirm === 'yes') {
-                $title = $album->getTitle();
-                $this->entityManager->remove($album);
+            if ($form->isValid()) {
+                $data = $form->getData();
+
+                $album->setTitle($data['title']);
+                $album->setArtist($data['artist']);
+
+                foreach ($album->getAuthors() as $author) {
+                    $album->removeAuthor($author);
+                }
+
+                if (!empty($data['authors'])) {
+                    foreach ($data['authors'] as $authorData) {
+                        if (!empty(trim($authorData['name'] ?? ''))) {
+                            $author = new Author();
+                            $author->setName($authorData['name']);
+                            $album->addAuthor($author);
+                        }
+                    }
+                }
+
                 $this->entityManager->flush();
 
-                $flashMessenger = $this->flashMessenger();
-                $flashMessenger->addMessage('Album "' . $title . '" was deleted successfully!', 'success');
+                return $this->redirect()->toRoute('album');
             }
+        }
 
+        // populate form with existing data
+        $authorsData = [];
+        foreach ($album->getAuthors() as $author) {
+            $authorsData[] = [
+                'id'   => $author->getId(),
+                'name' => $author->getName(),
+            ];
+        }
+
+        $form->setData([
+            'id'      => $album->getId(),
+            'title'   => $album->getTitle(),
+            'artist'  => $album->getArtist(),
+            'authors' => $authorsData,
+        ]);
+
+        return new ViewModel(['form' => $form, 'album' => $album]);
+    }
+
+    public function deleteAction()
+    {
+        $id    = $this->params()->fromRoute('id', 0);
+        $album = $this->entityManager->getRepository(Album::class)->find($id);
+
+        if (!$album) {
+            return $this->redirect()->toRoute('album');
+        }
+
+        if ($this->getRequest()->isPost()) {
+            if ($this->params()->fromPost('confirm') === 'yes') {
+                $this->entityManager->remove($album);
+                $this->entityManager->flush();
+            }
             return $this->redirect()->toRoute('album');
         }
 
