@@ -16,12 +16,25 @@
     <tr>
         <th>Title</th>
         <th>Artist</th>
+        <th>Authors</th>
         <th>Action</th>
     </tr>
     <?php foreach ($albums as $album) : ?>
         <tr>
             <td><?= $this->escapeHtml($album->getTitle()) ?></td>
             <td><?= $this->escapeHtml($album->getArtist()) ?></td>
+            <td>
+                <?php
+                    $authors = $album->getAuthors();
+                    if ($authors && count($authors) > 0) {
+                        $authorNames = [];
+                        foreach ($authors as $author) {
+                            $authorNames[] = $this->escapeHtml($author->getName());
+                        }
+                        echo implode(', ', $authorNames);
+                    }
+                ?>
+            </td>
             <td>
                 <a href="<?= $this->url('album', ['action' => 'edit', 'id' => $album->getId()]) ?>">Edit</a>
                 |
