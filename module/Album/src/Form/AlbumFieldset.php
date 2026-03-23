@@ -6,8 +6,9 @@ use Album\Entity\Album;
 use Laminas\Form\Fieldset;
 use Laminas\Hydrator\ClassMethodsHydrator;
 use Laminas\InputFilter\InputFilterProviderInterface;
+use Laminas\Stdlib\InitializableInterface;
 
-class AlbumFieldset extends Fieldset implements InputFilterProviderInterface
+class AlbumFieldset extends Fieldset implements InputFilterProviderInterface, InitializableInterface
 {
     public function __construct()
     {

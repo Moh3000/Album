@@ -3,8 +3,9 @@
 namespace Album\Form;
 
 use Laminas\Form\Form;
+use Laminas\Stdlib\InitializableInterface;
 
-class AddAlbumForm extends Form
+class AddAlbumForm extends Form implements InitializableInterface
 {
     public function init(): void
     {

@@ -3,6 +3,7 @@
 namespace Album;
 
 use Laminas\Router\Http\Segment;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 return [
     'router' => [
@@ -23,16 +24,27 @@ return [
             ],
         ],
     ],
-    'controllers' => [
+
+    'service_manager' => [
         'factories' => [
             Controller\AlbumController::class => Controller\AlbumControllerFactory::class,
         ],
     ],
+
+    'form_elements' => [
+        'factories' => [
+            Album\Form\AddAlbumForm::class => InvokableFactory::class,
+            Album\Form\EditAlbumForm::class => InvokableFactory::class,
+            Album\Form\AlbumFieldset::class => InvokableFactory::class,
+        ],
+    ],
+
     'view_manager' => [
         'template_path_stack' => [
             __DIR__ . '/../view',
         ],
     ],
+
     'doctrine' => [
         'driver' => [
             'Album_driver' => [
@@ -46,5 +58,4 @@ return [
             ],
         ],
     ],
-
 ];
