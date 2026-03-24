@@ -1,12 +1,14 @@
 <?php
-$form->setAttribute('action', $this->url('album', ['action' => 'add']));
+
 /** @var \Album\Form\AlbumForm $form */
+$form->setAttribute('action', $this->url('album', ['action' => 'add']));
+$form->setAttribute('method', 'post');
 $form->prepare();
 
-$title   = $form->has('title') ? $form->get('title') : null;
-$artist  = $form->has('artist') ? $form->get('artist') : null;
-$authors = $form->has('authors') ? $form->get('authors') : [];
-$submit  = $form->has('submit') ? $form->get('submit') : null;
+$title   = $form->get('title');
+$artist  = $form->get('artist');
+$authors = $form->get('authors');
+$submit  = $form->get('submit');
 ?>
 
 <h2>Add Album</h2>
@@ -31,6 +33,10 @@ $submit  = $form->has('submit') ? $form->get('submit') : null;
         <?php foreach ($authors as $index => $authorFieldset) : ?>
             <div class="author-row d-flex gap-2 mb-2">
                 <?= $this->formInput($authorFieldset->get('name')) ?>
+                <?= $this->formElementErrors(
+                    $authorFieldset->get('name'),
+                    ['class' => 'text-danger small']
+                ) ?>
                 <button type="button"
                     class="btn btn-danger btn-sm"
                     onclick="removeAuthor(this)">
@@ -64,9 +70,6 @@ $submit  = $form->has('submit') ? $form->get('submit') : null;
         const row = document.createElement('div');
         row.className = 'author-row d-flex gap-2 mb-2';
         row.innerHTML = `
-            <input type="hidden"
-                   name="authors[${authorCount}][id]"
-                   value="">
             <input type="text"
                    name="authors[${authorCount}][name]"
                    class="form-control"

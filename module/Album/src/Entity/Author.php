@@ -16,7 +16,6 @@ class Author
     #[ORM\Column(type: 'string', length: 100)]
     private string $name = '';
 
-    // MANY Authors → ONE Album (owning side)
     #[ORM\ManyToOne(
         targetEntity: Album::class,
         inversedBy: 'authors'

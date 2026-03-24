@@ -1,5 +1,4 @@
 <?php
-
 namespace Album\Controller;
 
 use Album\Entity\Album;
@@ -45,7 +44,6 @@ class AlbumController extends AbstractActionController
     {
         $form = $this->albumForm;
 
-
         if ($this->getRequest()->isPost()) {
             $form->setData($this->getRequest()->getPost()->toArray());
 
@@ -57,9 +55,10 @@ class AlbumController extends AbstractActionController
 
                 if (!empty($data['authors'])) {
                     foreach ($data['authors'] as $authorData) {
-                        if (!empty(trim($authorData['name'] ?? ''))) {
+                        $name = trim($authorData['name'] ?? '');
+                        if ($name !== '') {
                             $author = new Author();
-                            $author->setName($authorData['name']);
+                            $author->setName($name);
                             $album->addAuthor($author);
                         }
                     }
@@ -85,7 +84,7 @@ class AlbumController extends AbstractActionController
         }
 
         $form = $this->albumForm;
-      
+ 
 
         if ($this->getRequest()->isPost()) {
             $form->setData($this->getRequest()->getPost()->toArray());
@@ -96,15 +95,18 @@ class AlbumController extends AbstractActionController
                 $album->setTitle($data['title']);
                 $album->setArtist($data['artist']);
 
+                
                 foreach ($album->getAuthors() as $author) {
                     $album->removeAuthor($author);
                 }
 
+              
                 if (!empty($data['authors'])) {
                     foreach ($data['authors'] as $authorData) {
-                        if (!empty(trim($authorData['name'] ?? ''))) {
+                        $name = trim($authorData['name'] ?? '');
+                        if ($name !== '') {
                             $author = new Author();
-                            $author->setName($authorData['name']);
+                            $author->setName($name);
                             $album->addAuthor($author);
                         }
                     }
@@ -116,17 +118,14 @@ class AlbumController extends AbstractActionController
             }
         }
 
-        // populate form with existing data
+       
         $authorsData = [];
         foreach ($album->getAuthors() as $author) {
-            $authorsData[] = [
-                'id'   => $author->getId(),
-                'name' => $author->getName(),
-            ];
+            $authorsData[] = ['name' => $author->getName()];
         }
 
+     
         $form->setData([
-            'id'      => $album->getId(),
             'title'   => $album->getTitle(),
             'artist'  => $album->getArtist(),
             'authors' => $authorsData,
@@ -155,3 +154,4 @@ class AlbumController extends AbstractActionController
         return new ViewModel(['album' => $album]);
     }
 }
+

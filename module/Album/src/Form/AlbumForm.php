@@ -2,10 +2,11 @@
 
 namespace Album\Form;
 
+use Laminas\InputFilter\InputFilterProviderInterface;
 use Doctrine\ORM\EntityManager;
 use Laminas\Form\Form;
 
-class AlbumForm extends Form
+class AlbumForm extends Form implements InputFilterProviderInterface
 {
     private EntityManager $entityManager;
     private AuthorFieldset $authorFieldset;
@@ -21,10 +22,7 @@ class AlbumForm extends Form
 
     public function init(): void
     {
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'id',
-        ]);
+       
 
         $this->add([
             'type'       => 'text',

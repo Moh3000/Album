@@ -16,9 +16,7 @@ class AuthorFieldset extends Fieldset implements InputFilterProviderInterface
         $this->setHydrator(new DoctrineObject($entityManager));
         $this->setObject(new Author());
 
-        // add elements directly in constructor
-        // because init() is only called by FormElementManager
-        // we are NOT using FormElementManager here
+       
         $this->add([
             'type'       => 'text',
             'name'       => 'name',
@@ -34,15 +32,17 @@ class AuthorFieldset extends Fieldset implements InputFilterProviderInterface
     {
         return [
             'name' => [
-                'required' => false,
+                'required'    => true,
+                'allow_empty' => false,  // <-- key fix
                 'filters'  => [
                     ['name' => 'StringTrim'],
                     ['name' => 'StripTags'],
                 ],
                 'validators' => [
+                    ['name' => 'NotEmpty'],  // <-- key fix
                     [
                         'name'    => 'StringLength',
-                        'options' => ['min' => 0, 'max' => 100],
+                        'options' => ['min' => 1, 'max' => 100],
                     ],
                 ],
             ],

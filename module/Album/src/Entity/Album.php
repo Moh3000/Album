@@ -22,7 +22,7 @@ class Album
     #[ORM\Column(type: 'string', length: 100)]
     private string $artist = '';
 
-    // ONE Album → MANY Authors (inverse side)
+    
     #[ORM\OneToMany(
         targetEntity: Author::class,
         mappedBy: 'album',
