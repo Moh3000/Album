@@ -11,7 +11,7 @@ class AlbumFormFactory
     {
         $entityManager  = $container->get(EntityManager::class);
 
-        // create AuthorFieldset manually with EntityManager
+       
         $authorFieldset = new AuthorFieldset($entityManager);
 
         $form = new AlbumForm($entityManager, $authorFieldset);

@@ -1,8 +1,9 @@
 <?php
+
 namespace Album\Controller;
 
 use Album\Entity\Album;
-use Album\Entity\Author;
+
 use Album\Form\AlbumForm;
 use Doctrine\ORM\EntityManager;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -43,30 +44,19 @@ class AlbumController extends AbstractActionController
     public function addAction()
     {
         $form = $this->albumForm;
+        $album = new Album();
+        
 
         if ($this->getRequest()->isPost()) {
             $form->setData($this->getRequest()->getPost()->toArray());
 
             if ($form->isValid()) {
-                $data  = $form->getData();
-                $album = new Album();
-                $album->setTitle($data['title']);
-                $album->setArtist($data['artist']);
-
-                if (!empty($data['authors'])) {
-                    foreach ($data['authors'] as $authorData) {
-                        $name = trim($authorData['name'] ?? '');
-                        if ($name !== '') {
-                            $author = new Author();
-                            $author->setName($name);
-                            $album->addAuthor($author);
-                        }
-                    }
-                }
-
+                $album = $form->getData();
+               
                 $this->entityManager->persist($album);
                 $this->entityManager->flush();
-
+                $flashMessenger = $this->flashMessenger();
+                $flashMessenger->addMessage('Album "' . $album->getTitle() . '" was added successfully!', 'success');
                 return $this->redirect()->toRoute('album');
             }
         }
@@ -84,52 +74,20 @@ class AlbumController extends AbstractActionController
         }
 
         $form = $this->albumForm;
- 
+        $form->bind($album);   
 
         if ($this->getRequest()->isPost()) {
             $form->setData($this->getRequest()->getPost()->toArray());
 
             if ($form->isValid()) {
-                $data = $form->getData();
-
-                $album->setTitle($data['title']);
-                $album->setArtist($data['artist']);
-
-                
-                foreach ($album->getAuthors() as $author) {
-                    $album->removeAuthor($author);
-                }
-
-              
-                if (!empty($data['authors'])) {
-                    foreach ($data['authors'] as $authorData) {
-                        $name = trim($authorData['name'] ?? '');
-                        if ($name !== '') {
-                            $author = new Author();
-                            $author->setName($name);
-                            $album->addAuthor($author);
-                        }
-                    }
-                }
+                $album = $form->getData(); 
 
                 $this->entityManager->flush();
-
+                $flashMessenger = $this->flashMessenger();
+                $flashMessenger->addMessage('Album "' . $album->getTitle() . '" was edited successfully!', 'success');
                 return $this->redirect()->toRoute('album');
             }
         }
-
-       
-        $authorsData = [];
-        foreach ($album->getAuthors() as $author) {
-            $authorsData[] = ['name' => $author->getName()];
-        }
-
-     
-        $form->setData([
-            'title'   => $album->getTitle(),
-            'artist'  => $album->getArtist(),
-            'authors' => $authorsData,
-        ]);
 
         return new ViewModel(['form' => $form, 'album' => $album]);
     }
@@ -147,6 +105,8 @@ class AlbumController extends AbstractActionController
             if ($this->params()->fromPost('confirm') === 'yes') {
                 $this->entityManager->remove($album);
                 $this->entityManager->flush();
+                $flashMessenger = $this->flashMessenger();
+                $flashMessenger->addMessage('Album "' . $album->getTitle() . '" was deleted successfully!', 'success');
             }
             return $this->redirect()->toRoute('album');
         }
@@ -154,4 +114,3 @@ class AlbumController extends AbstractActionController
         return new ViewModel(['album' => $album]);
     }
 }
-

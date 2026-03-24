@@ -2,9 +2,11 @@
 
 namespace Album\Form;
 
-use Laminas\InputFilter\InputFilterProviderInterface;
+use Album\Entity\Album;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use Doctrine\ORM\EntityManager;
 use Laminas\Form\Form;
+use Laminas\InputFilter\InputFilterProviderInterface;
 
 class AlbumForm extends Form implements InputFilterProviderInterface
 {
@@ -18,12 +20,16 @@ class AlbumForm extends Form implements InputFilterProviderInterface
         parent::__construct('album-form');
         $this->entityManager  = $entityManager;
         $this->authorFieldset = $authorFieldset;
+
+   
+        $this->setHydrator(new DoctrineObject($entityManager));
+
+    
+        $this->setObject(new Album());
     }
 
     public function init(): void
     {
-       
-
         $this->add([
             'type'       => 'text',
             'name'       => 'title',
@@ -44,7 +50,6 @@ class AlbumForm extends Form implements InputFilterProviderInterface
             ],
         ]);
 
-        // use the injected AuthorFieldset instance
         $this->add([
             'type'    => 'collection',
             'name'    => 'authors',
@@ -71,7 +76,6 @@ class AlbumForm extends Form implements InputFilterProviderInterface
     public function getInputFilterSpecification(): array
     {
         return [
-            'id'     => ['required' => false],
             'title'  => [
                 'required' => true,
                 'filters'  => [

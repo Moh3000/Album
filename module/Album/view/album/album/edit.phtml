@@ -1,4 +1,13 @@
 <?php
+$successMessages = $this->flashMessenger()->getMessages('success');
+if (!empty($successMessages)) : ?>
+    <?php foreach ($successMessages as $message) : ?>
+        <div style="background:#d4edda; color:#155724; padding:10px; margin-bottom:10px; border-radius:4px;">
+            <?= $this->escapeHtml($message) ?>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
+<?php
 
 /** @var \Album\Form\AlbumForm $form */
 $form->prepare();
@@ -16,7 +25,8 @@ $id      = $form->has('id') ? $form->get('id') : null;
 $form->setAttribute('action', $this->url('album', [
     'action' => 'edit',
     'id' => $album->getId()
-]));$form->prepare();
+]));
+$form->prepare();
 ?>
 <?= $this->form()->openTag($form) ?>
 

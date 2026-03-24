@@ -1,5 +1,4 @@
 <?php
-
 namespace Album\Entity;
 
 use Album\Repository\AlbumRepository;
@@ -22,7 +21,6 @@ class Album
     #[ORM\Column(type: 'string', length: 100)]
     private string $artist = '';
 
-    
     #[ORM\OneToMany(
         targetEntity: Author::class,
         mappedBy: 'album',
@@ -66,21 +64,37 @@ class Album
         return $this->authors;
     }
 
-    // helper method to ADD author
+ 
     public function addAuthor(Author $author): void
     {
         if (!$this->authors->contains($author)) {
             $this->authors->add($author);
-            $author->setAlbum($this); // sync owning side!
+            $author->setAlbum($this);
         }
     }
 
-    // helper method to REMOVE author
+
     public function removeAuthor(Author $author): void
     {
         if ($this->authors->contains($author)) {
             $this->authors->removeElement($author);
-            $author->setAlbum(null); // sync owning side!
+            $author->setAlbum(null);
+        }
+    }
+
+
+    public function addAuthors(Collection $authors): void
+    {
+        foreach ($authors as $author) {
+            $this->addAuthor($author);
+        }
+    }
+
+  
+    public function removeAuthors(Collection $authors): void
+    {
+        foreach ($authors as $author) {
+            $this->removeAuthor($author);
         }
     }
 }
