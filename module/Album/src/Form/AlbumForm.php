@@ -26,10 +26,7 @@ class AlbumForm extends Form implements InputFilterProviderInterface
 
     
         $this->setObject(new Album());
-    }
 
-    public function init(): void
-    {
         $this->add([
             'type'       => 'text',
             'name'       => 'title',

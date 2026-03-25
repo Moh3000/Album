@@ -15,10 +15,7 @@ class AuthorFieldset extends Fieldset implements InputFilterProviderInterface
 
         $this->setHydrator(new DoctrineObject($entityManager));
         $this->setObject(new Author());
-        $this->add([
-            'type' => 'hidden',
-            'name' => 'id',  
-        ]);
+
        
         $this->add([
             'type'       => 'text',
@@ -36,13 +33,13 @@ class AuthorFieldset extends Fieldset implements InputFilterProviderInterface
         return [
             'name' => [
                 'required'    => true,
-                'allow_empty' => false,  
+                
                 'filters'  => [
                     ['name' => 'StringTrim'],
                     ['name' => 'StripTags'],
                 ],
                 'validators' => [
-                    ['name' => 'NotEmpty'],
+                
                     [
                         'name'    => 'StringLength',
                         'options' => ['min' => 1, 'max' => 100],

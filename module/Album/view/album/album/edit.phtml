@@ -9,7 +9,11 @@ if (!empty($successMessages)) : ?>
 <?php endif; ?>
 <?php
 
-/** @var \Album\Form\AlbumForm $form */
+$form->setAttribute('action', $this->url('album', [
+    'action' => 'edit',
+    'id' => $album->getId()
+]));
+$form->setAttribute('method', 'post');
 $form->prepare();
 
 $title   = $form->has('title') ? $form->get('title') : null;
@@ -20,14 +24,7 @@ $id      = $form->has('id') ? $form->get('id') : null;
 ?>
 
 <h2>Edit Album</h2>
-<?php
-// Use the 'album' route and 'add' action dynamically
-$form->setAttribute('action', $this->url('album', [
-    'action' => 'edit',
-    'id' => $album->getId()
-]));
-$form->prepare();
-?>
+
 <?= $this->form()->openTag($form) ?>
 
 <?php if ($id): ?><?= $this->formHidden($id) ?><?php endif; ?>

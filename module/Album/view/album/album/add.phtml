@@ -9,7 +9,7 @@ if (!empty($successMessages)) : ?>
 <?php endif; ?>
 <?php
 
-/** @var \Album\Form\AlbumForm $form */
+
 $form->setAttribute('action', $this->url('album', ['action' => 'add']));
 $form->setAttribute('method', 'post');
 $form->prepare();

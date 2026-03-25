@@ -14,9 +14,9 @@ class AlbumFormFactory
        
         $authorFieldset = new AuthorFieldset($entityManager);
 
-        $form = new AlbumForm($entityManager, $authorFieldset);
-        $form->init();
+        
+        
 
-        return $form;
+        return new AlbumForm($entityManager, $authorFieldset);;
     }
 }
