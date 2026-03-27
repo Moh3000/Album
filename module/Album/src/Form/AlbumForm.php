@@ -19,7 +19,7 @@ class AlbumForm extends Form implements InputFilterProviderInterface
     ) {
         parent::__construct('album-form');
         $this->entityManager  = $entityManager;
-        $this->authorFieldset = $authorFieldset;
+       // $this->authorFieldset = $authorFieldset;
 
    
         $this->setHydrator(new DoctrineObject($entityManager));
@@ -56,7 +56,7 @@ class AlbumForm extends Form implements InputFilterProviderInterface
                 'should_create_template' => true,
                 'allow_add'              => true,
                 'allow_remove'           => true,
-                'target_element'         => $this->authorFieldset,
+                'target_element'         => new AuthorFieldset($entityManager),
             ],
         ]);
 

@@ -80,8 +80,9 @@ class AlbumController extends AbstractActionController
             $form->setData($this->getRequest()->getPost()->toArray());
 
             if ($form->isValid()) {
-                $album = $form->getData(); 
+                $album = $form->getData();
 
+                $this->entityManager->persist($album);
                 $this->entityManager->flush();
                 $flashMessenger = $this->flashMessenger();
                 $flashMessenger->addMessage('Album "' . $album->getTitle() . '" was edited successfully!', 'success');

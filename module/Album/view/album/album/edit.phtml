@@ -48,6 +48,10 @@ $id      = $form->has('id') ? $form->get('id') : null;
             <div class="author-row d-flex gap-2 mb-2">
                 <?php if ($authorFieldset->has('id')): ?><?= $this->formHidden($authorFieldset->get('id')) ?><?php endif; ?>
                 <?php if ($authorFieldset->has('name')): ?><?= $this->formInput($authorFieldset->get('name')) ?><?php endif; ?>
+                <?= $this->formElementErrors(
+                    $authorFieldset->get('name'),
+                    ['class' => 'text-danger small']
+                ) ?>
                 <button type="button"
                     class="btn btn-danger btn-sm"
                     onclick="removeAuthor(this)">
